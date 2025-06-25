@@ -4,9 +4,9 @@
 import asyncio
 
 async def greet():
-    print("Hello")
+    print("Hello World")
     await asyncio.sleep(1)
-    print("World")
+    print("7K เร้าจายยยยย")
 
 asyncio.run(greet()) # + Create and run an event loop
 
