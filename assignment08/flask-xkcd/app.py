@@ -2,31 +2,33 @@ import time
 import requests as requests
 from flask import Flask, render_template
 
-# Import blueprints from sync and async route folders
+# นำเข้า blueprint จากโฟลเดอร์ sync และ async route
 from sync_routes.routes import sync_bp
+from async_routes.routes import async_bp
 
-# Initialize the Flask application
+# สร้างแอป Flask
 app = Flask(__name__)
 
-# Register sync and async blueprints under different URL prefixes
+# ลงทะเบียน blueprint สำหรับ sync และ async โดยใช้ URL prefix ที่ต่างกัน
 app.register_blueprint(sync_bp, url_prefix="/sync")
+app.register_blueprint(async_bp, url_prefix="/async")
 
-# Define constant using Flask's config dictionary
-app.config["NUMBER_OF_XKCD"] = 7  # Used to control how many XKCD to fetch
+# กำหนดค่าคงที่โดยใช้ config dictionary ของ Flask
+app.config["NUMBER_OF_XKCD"] = 20  # ใช้ควบคุมจำนวน XKCD ที่จะดึงข้อมูล
 
-# Define root route
+# กำหนด route หลัก
 @app.route('/')
 def index():
-    start_time = time.perf_counter()  # Start timer
-    end_time = time.perf_counter()    # End timer (immediate since no logic)
+    start_time = time.perf_counter()  # เริ่มจับเวลา
+    end_time = time.perf_counter()    # จับเวลาสิ้นสุด (ทันทีเพราะไม่มี logic)
 
-    # Render base template with performance timing and empty list
+    # render template base.html พร้อมข้อมูลเวลาและรายการว่าง
     return render_template('base.html'
                            , title="Flask XKCD"
                            , heading="Pokemon Flask"
-                           , xkcds=[]   # Placeholder for XKCD or other items
+                           , xkcds=[]   # ตัวแทนสำหรับ XKCD หรือรายการอื่น
                            , end_time=end_time, start_time=start_time)
 
-# Run the application
+# รันแอปพลิเคชัน
 if __name__ == '__main__':
     app.run(debug=True, port=50000)

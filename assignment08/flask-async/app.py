@@ -1,29 +1,29 @@
 from flask import Flask, render_template, request
-import asyncio  # Used for async operations like sleeping or async I/O
+import asyncio  # ใช้สำหรับงานแบบอะซิงโครนัส เช่น การหน่วงเวลา หรือ I/O แบบอะซิงโครนัส
 
-# Create the Flask application
+# สร้างแอปพลิเคชัน Flask
 app = Flask(__name__)
 
-# Define the root route ("/") as an asynchronous function
+# กำหนด route หลัก ("/") เป็นฟังก์ชันแบบอะซิงโครนัส
 @app.route("/")
 async def index():
-    # Render the HTML template with default name "World"
-    # Note: render_template is synchronous and should NOT be awaited
+    # แสดงผลเทมเพลต HTML โดยใช้ค่าเริ่มต้นของ name เป็น "World"
+    # หมายเหตุ: render_template เป็นฟังก์ชันซิงโครนัส ไม่ควรใช้ await
     return render_template("index.html", name="World")
 
-# Define the /hello route to handle GET requests asynchronously
+# กำหนด route /hello เพื่อรับคำขอ GET แบบอะซิงโครนัส
 @app.route("/hello")
 async def hello():
-    # Retrieve the 'name' value from the URL query string (?name=YourName)
-    # Default to "World" if no name is provided
+    # ดึงค่าจาก query string ของ URL (?name=YourName)
+    # ถ้าไม่มี name ให้ใช้ค่าเริ่มต้นเป็น "World"
     name = request.args.get("name", "World")
     
-    # Simulate an async I/O task (e.g., waiting for a database or API)
+    # จำลองงาน I/O แบบอะซิงโครนัส (เช่น รอข้อมูลจากฐานข้อมูลหรือ API)
     await asyncio.sleep(1)  # จำลองงาน async
-    # Return the template with the provided name
+    # ส่งคืนเทมเพลตพร้อมกับชื่อที่รับมา
     return render_template("index.html", name=name)
 
-# Run the app when this script is executed directly
+# รันแอปเมื่อสคริปต์นี้ถูกเรียกใช้งานโดยตรง
 if __name__ == "__main__":
-    # Start the Flask development server with debug mode on, using port 50000
+    # เริ่มเซิร์ฟเวอร์ Flask ในโหมด debug ที่พอร์ต 50000
     app.run(debug=True, port=50000)
