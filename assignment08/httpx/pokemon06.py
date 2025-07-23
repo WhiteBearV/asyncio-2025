@@ -2,7 +2,7 @@ import asyncio
 import httpx
 
 
-url = "https://pokeapi.co/api/v2/ability/?limit=20" 
+url = "https://pokeapi.co/api/v2/ability/?limit=100" 
 
 async def fetch_pokemon_data(client, url):
     try:
@@ -23,9 +23,8 @@ async def main():
         res = await client.get(url)
         res.raise_for_status()
         data = res.json()
-        print(data)
         # ดึงแค่ 20 รายการแรก
-        ability_urls = [item['url'] for item in data['results'][:20]]
+        ability_urls = [item['url'] for item in data['results'][:100]]
 
         # สร้าง tasks ไปดึงข้อมูลแบบ concurrent
         tasks = [fetch_pokemon_data(client, url) for url in ability_urls]
