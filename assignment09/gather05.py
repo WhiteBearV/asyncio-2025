@@ -1,38 +1,38 @@
-# example of canceling all tasks if one task fails
+# ตัวอย่างการยกเลิกทุก task ถ้ามี task ใด task หนึ่งล้มเหลว
 import asyncio
  
-# coroutine used for a task
+# coroutine ที่ใช้สำหรับ task
 async def task_coro(value):
-    # report a message
+    # แสดงข้อความ
     print(f'>task {value} executing')
-    # sleep for a moment
+    # หน่วงเวลาเล็กน้อย
     await asyncio.sleep(1)
-    # check if this task should fail
+    # ตรวจสอบว่า task นี้ควรล้มเหลวหรือไม่
     if value == 5:
         print(f'>task {value} failing')
         raise Exception('Something bad happened')
-    # otherwise, block again
+    # ถ้าไม่ล้มเหลว ให้หน่วงเวลาอีกครั้ง
     await asyncio.sleep(1)
     print(f'>task {value} done')
  
-# coroutine used for the entry point
+# coroutine ที่ใช้เป็นจุดเริ่มต้น
 async def main():
-    # create many coroutines
+    # สร้าง coroutine หลายตัว
     tasks = [asyncio.create_task(task_coro(i)) for i in range(10)]
-    # execute all coroutines as a group
+    # รัน coroutine ทั้งหมดเป็นกลุ่ม
     group = asyncio.gather(*tasks)
-    # handle the case that a task fails
+    # จัดการกรณีที่มี task ล้มเหลว
     try:
-        # wait for the group of tasks to complete
+        # รอให้กลุ่มของ task ทำงานเสร็จ
         await group
     except Exception as e:
-        # report failure
+        # แสดงข้อความเมื่อเกิดข้อผิดพลาด
         print(f'A task failed with: {e}, canceling all tasks')
-        # cancel all tasks
+        # ยกเลิกทุก task
         for task in tasks:
             task.cancel()
-    # wait a while
+    # รออีกสักพัก
     await asyncio.sleep(2)
  
-# start the asyncio program
+# เริ่มโปรแกรม asyncio
 asyncio.run(main())

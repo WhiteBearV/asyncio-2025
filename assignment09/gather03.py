@@ -1,29 +1,29 @@
-# example of gather with returned exceptions
+# ตัวอย่างการใช้ gather ที่คืนค่า exception
 import asyncio
  
-# coroutine used for a task
+# coroutine ที่ใช้สำหรับ task
 async def task_coro(value):
-    # report a message
-    print(f'>task {value} executing')
-    # sleep for a moment
+    # แสดงข้อความ
+    print(f'>task {value} กำลังทำงาน')
+    # หน่วงเวลาเล็กน้อย
     await asyncio.sleep(1)
-    # check for failure
+    # ตรวจสอบข้อผิดพลาด
     if value == 0:
-        raise Exception('Something bad happened')
+        raise Exception('เกิดข้อผิดพลาดบางอย่าง')
     return value
  
-# coroutine used for the entry point
+# coroutine ที่ใช้เป็นจุดเริ่มต้น
 async def main():
-    # report a message
-    print('main starting')
-    # create many coroutines
+    # แสดงข้อความ
+    print('main กำลังเริ่มต้น')
+    # สร้าง coroutine หลายตัว
     coros = [task_coro(i) for i in range(10)]
-    # run the tasks
+    # รัน task ทั้งหมด
     results = await asyncio.gather(*coros, return_exceptions=True)
-    # report results
+    # แสดงผลลัพธ์
     print(results)
-    # report a message
-    print('main done')
+    # แสดงข้อความ
+    print('main เสร็จสิ้น')
  
-# start the asyncio program
+# เริ่มโปรแกรม asyncio
 asyncio.run(main())

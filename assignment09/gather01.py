@@ -1,27 +1,27 @@
-# example of gather for many coroutines that return values
+# ตัวอย่างการใช้ gather สำหรับ coroutine หลายตัวที่คืนค่า
 import asyncio
  
-# coroutine used for a task
+# coroutine ที่ใช้สำหรับ task
 async def task_coro(value):
-    # report a message
-    print(f'>task {value} executing')
-    # sleep for a moment
+    # แสดงข้อความ
+    print(f'>task {value} กำลังทำงาน')
+    # หน่วงเวลาเล็กน้อย
     await asyncio.sleep(1)
-    # return a value
+    # คืนค่า
     return value * 10
  
-# coroutine used for the entry point
+# coroutine ที่ใช้เป็นจุดเริ่มต้น
 async def main():
-    # report a message
-    print('main starting')
-    # create many tasks
+    # แสดงข้อความ
+    print('main เริ่มต้น')
+    # สร้าง task หลายตัว
     tasks = [task_coro(i) for i in range(10)]
-    # run the tasks
+    # รัน task ทั้งหมด
     values = await asyncio.gather(*tasks)
-    # report the values
+    # แสดงค่าที่ได้
     print(values)
-    # report a message
-    print('main done')
+    # แสดงข้อความ
+    print('main เสร็จสิ้น')
  
-# start the asyncio program
+# เริ่มโปรแกรม asyncio
 asyncio.run(main())

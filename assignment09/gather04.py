@@ -1,29 +1,29 @@
-# example of gather where one task is canceled with returned exceptions
+# ตัวอย่างการใช้ gather ที่มีการยกเลิกหนึ่ง task พร้อมคืนค่า exception
 import asyncio
  
-# coroutine used for a task
+# coroutine ที่ใช้สำหรับ task
 async def task_coro(value, friend):
-    # report a message
-    print(f'>task {value} executing')
-    # cancel friend task
+    # แสดงข้อความ
+    print(f'>task {value} กำลังทำงาน')
+    # ยกเลิก task เพื่อน
     if friend:
         friend.cancel()
-    # sleep for a moment
+    # หน่วงเวลาเล็กน้อย
     await asyncio.sleep(1)
  
-# coroutine used for the entry point
+# coroutine ที่ใช้เป็นจุดเริ่มต้น
 async def main():
-    # report a message
-    print('main starting')
-    # create many tasks
+    # แสดงข้อความ
+    print('main กำลังเริ่มต้น')
+    # สร้างหลาย task
     task0 = asyncio.create_task(task_coro(0, None))
     task1 = asyncio.create_task(task_coro(1, task0))
-    # run the tasks
+    # รัน task ทั้งหมด
     results = await asyncio.gather(task0, task1, return_exceptions=True)
-    # report results
+    # แสดงผลลัพธ์
     print(results)
-    # report a message
-    print('main done')
+    # แสดงข้อความ
+    print('main เสร็จสิ้น')
  
-# start the asyncio program
+# เริ่มโปรแกรม asyncio
 asyncio.run(main())
