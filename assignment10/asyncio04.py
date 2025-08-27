@@ -4,52 +4,71 @@ import time
 def now():
     return time.ctime()
 
-# ---------- Producers (Customers) ----------
+# ---------- Producers (ลูกค้า) ----------
 async def customer(name, items, queue: asyncio.Queue):
-    # ลูกค้าหยิบของเสร็จ -> ส่งออเดอร์เข้าคิว
     await queue.put((name, items))
     print(f"[{now()}] [{name}] finished shopping: {items}")
 
-# ---------- Consumers (Cashiers) ----------
-async def cashier(worker_name, per_item_sec: float, queue: asyncio.Queue):
+# ---------- Consumers (แคชเชียร์) ----------
+async def cashier(worker_name, per_item_sec: float, queue: asyncio.Queue, stats: dict):
     try:
         while True:
-            cust_name, items = await queue.get()       # รอคิวลูกค้า
+            cust_name, items = await queue.get()
             print(f"[{now()}] [{worker_name}] processing {cust_name} with orders {items}")
-            await asyncio.sleep(len(items) * per_item_sec)  # เวลาคิดเงินตามจำนวนสินค้า
+
+            process_time = len(items) * per_item_sec
+            await asyncio.sleep(process_time)
+
             print(f"[{now()}] [{worker_name}] finished {cust_name}")
             queue.task_done()
+
+            # อัปเดตสถิติ
+            stats[worker_name]["count"] += 1
+            stats[worker_name]["time"] += process_time
     except asyncio.CancelledError:
-        # ถูกยกเลิกโดย main เพื่อปิดร้าน
         raise
 
 # ---------- Main ----------
 async def main():
     queue = asyncio.Queue()
 
-    # สร้างและสตาร์ตแคชเชียร์ 2 คน
-    c1 = asyncio.create_task(cashier("Cashier-1", 1.0, queue))  # 1 วินาที/สินค้า
-    c2 = asyncio.create_task(cashier("Cashier-2", 2.0, queue))  # 2 วินาที/สินค้า
+    # เก็บสถิติของแคชเชียร์ทุกคน
+    stats = {f"Cashier-{i+1}": {"count": 0, "time": 0} for i in range(2)}
 
-    # ลูกค้า 3 คน ส่งออเดอร์เข้าคิว (แต่ละคนเป็น 1 task)
-    customers = [
-        asyncio.create_task(customer("Alice",   ["Apple", "Banana", "Milk"], queue)),
-        asyncio.create_task(customer("Bob",     ["Bread", "Cheese"],         queue)),
-        asyncio.create_task(customer("Charlie", ["Eggs", "Juice", "Butter"], queue)),
+    # สร้างแคชเชียร์ 20 คน (เพิ่มเวลาทีละ 1 วินาที/ชิ้น)
+    cashier_tasks = [
+        asyncio.create_task(cashier(f"Cashier-{i+1}", i+1, queue, stats))
+        for i in range(2)
     ]
-    await asyncio.gather(*customers)      # ทุกลูกค้าส่งออเดอร์เข้าคิวแล้ว
 
-    # รอให้แคชเชียร์คิดเงินลูกค้าทั้งหมดจนเสร็จ
+    # สร้างลูกค้า 20 คน (สินค้า 2–5 ชิ้น)
+    customer_tasks = [
+        asyncio.create_task(
+            customer(
+                f"Customer-{i+1}",
+                [f"Item{k+1}" for k in range((i % 4) + 1)],
+                queue
+            )
+        )
+        for i in range(10)
+    ]
+
+    await asyncio.gather(*customer_tasks)
     await queue.join()
 
-    # ปิดแคชเชียร์อย่างปลอดภัย
-    for t, name in [(c1, "Cashier-1"), (c2, "Cashier-2")]:
+    # ยกเลิกงานของแคชเชียร์
+    for i, t in enumerate(cashier_tasks):
         t.cancel()
         try:
             await t
         except asyncio.CancelledError:
             pass
-        print(f"[{now()}] [{name}] closed")
+        print(f"[{now()}] [Cashier-{i+1}] closed")
+
+    # สรุปผลการทำงานของแคชเชียร์แต่ละคน
+    print("\n===== Summary =====")
+    for name, data in stats.items():
+        print(f"{name}: รับลูกค้า {data['count']} คน, ใช้เวลา {data['time']} วินาที")
 
     print(f"[{now()}] [Main] Supermarket closed!")
 
