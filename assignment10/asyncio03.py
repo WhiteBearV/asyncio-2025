@@ -2,78 +2,60 @@ from random import random
 import asyncio
 import time
 
-# coroutine to generate work
-
+# คอร์รูทีนสำหรับสร้างงาน
 async def producer (queue):
 
     print(F"{time.ctime()} Producer: Running")
 
-    # gnerate work
-
+    # สร้างงาน
     for i in range(10):
 
-    # generate a value
-
+        # สร้างค่าหนึ่งค่า
         value = random()
 
-        # block to simulate work
-
+        # หยุดเพื่อจำลองเวลาทำงาน
         await asyncio.sleep(value)
 
-        # add to the queue
-
+        # เพิ่มเข้าไปในคิว
         await queue.put(value)
 
     print(f"{time.ctime()} Producer: Done")
 
-# corotine to consume work
-
+# คอร์รูทีนสำหรับผู้บริโภคเพื่อประมวลงาน
 async def consumer (queue):
 
     print(f"{time.ctime()} Consumer: Running")
 
-    # cosumer work
-
+    # งานของผู้บริโภค
     while True:
 
-        # get a unit of work
-
+        # ดึงงานหนึ่งหน่วยจากคิว
         item = await queue.get()
 
-        # report
-
+        # แสดงผล
         print(f"{time.ctime()} >get {item}")
 
-        # block while processing
-
+        # หยุดขณะที่กำลังประมวลผล
         if item:
-
             await asyncio.sleep(item)
 
-        # mark the task as done
-
+        # ระบุว่างานเสร็จแล้ว
         queue.task_done()
 
-# entry point coroutine
-
+# คอร์รูทีนจุดเข้า (main)
 async def main():
 
-    # create the shared queue
-
+    # สร้างคิวที่ใช้ร่วมกัน
     queue = asyncio.Queue()
 
-    # start the consumer
-
+    # เริ่มผู้บริโภค
     consumer_tasks = asyncio.create_task(consumer (queue))
 
-    # start producer and wait fot it to finish
-
+    # เริ่มผู้ผลิตและรอให้เสร็จ
     await asyncio.create_task(producer (queue))
 
-    # wait for all items to be processes
-
+    # รอให้รายการทั้งหมดถูกประมวลผลเสร็จ
     await queue.join()
 
-# start the asyncio program
-
+# เริ่มโปรแกรม asyncio
 asyncio.run(main())

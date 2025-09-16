@@ -1,58 +1,58 @@
-# example of using an asyncio queue without blocking
+# ตัวอย่างการใช้ asyncio.Queue โดยไม่บล็อก
 from random import random
 import asyncio
-# coroutine to generate work
+# คอร์รูทีนสำหรับสร้างงาน
 
 async def producer (queue):
     print('Producer: Running')
-    # generate work
+    # สร้างงาน
 
     for i in range(10):
-        # generate a value
+        # สร้างค่า
         value = i
-        # block to simulate work
+        # หน่วงเวลาเพื่อจำลองการทำงาน
         sleeptime = random()
         print(f"> Producer {value} sleep {sleeptime}")
         await asyncio.sleep(sleeptime)
-        # add to the queue
+        # เพิ่มลงคิว
         print(f"> Producer put {value}")
         await queue.put(value)
-    # send an all done signal
+    # ส่งสัญญาณว่าเสร็จทั้งหมด
     await queue.put (None)
     print('Producer: Done')
 
-# coroutine to consume work
+# คอร์รูทีนสำหรับบริโภคงาน
 
 async def consumer (queue):
 
     print('Consumer: Running')
 
-    # consume work
+    # บริโภคงาน
 
     while True:
-        # get a unit of work without blocking
+        # ดึงงานหนึ่งหน่วยโดยไม่บล็อก
         try:
             item = queue.get_nowait()
-        except asyncio. QueueEmpty:
+        except asyncio.QueueEmpty:
             print('Consumer: got nothing, waiting a while...')
             await asyncio.sleep(0.5)
             continue
-        # check for stop
+        # ตรวจสอบสัญญาณหยุด
         if item is None:
             break
-        # report
+        # รายงาน
         print(f'\t> Consumer got {item}')
-        # all done
+        # เสร็จทั้งหมด
     print('Consumer: Done')
-    # entry point coroutine
+    # คอร์รูทีนจุดเริ่มต้น
 
 async def main():
 
-# create the shared queue
+    # สร้างคิวที่ใช้ร่วมกัน
     queue = asyncio.Queue()
 
-# run the producer and consumers
+    # รันโปรดิวเซอร์และคอนซูเมอร์
     await asyncio.gather(producer (queue), consumer (queue))
 
-# start the asyncio program
+# เริ่มโปรแกรม asyncio
 asyncio.run(main())

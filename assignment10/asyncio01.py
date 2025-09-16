@@ -1,52 +1,52 @@
-# example of using an asyncio queue
+# ตัวอย่างการใช้ asyncio.Queue
 from random import random
 import asyncio
 
-# coroutine to generate work
+# คอรูทีนสำหรับสร้างงาน
 
 async def producer (queue):
     print('Producer: Running')
-# generate work
+# สร้างงาน
     for i in range(10):
 
-# generate a value
+# สร้างค่าหนึ่งค่า
 
         value = i
-        # block to simulate work
+        # หยุดชั่วคราวเพื่อจำลองการทำงาน
         await asyncio.sleep(random())
-        # add to the queue
+        # เพิ่มเข้าไปในคิว
         print(f"> Producer put {value}")
         await queue.put(value)
 
-    # send an all done signal
+    # ส่งสัญญาณว่าทำงานเสร็จทั้งหมด
     await queue.put(None)
     print('Producer: Done')
 
-# coroutine to consume work
+# คอรูทีนสำหรับรับงาน
 
 async def consumer (queue):
 
     print('Consumer: Running')
 
-    # consume work
+    # รับงานจากคิว
 
     while True:
-        # get a unit o
+        # ดึงงานหนึ่งชิ้น
         item = await queue.get()
-        # check for stop signal
+        # ตรวจสอบสัญญาณหยุด
         if item is None:
             break
-        # report
+        # แสดงผล
         print(f'\t> Consumer got {item}')
-        # all done
+        # ทำงานเสร็จ
         print('Consumer: Done')
-        # entry point oroutine
+        # จุดเริ่มต้นของคอรูทีน
 
 async def main():
-    # create the shared queue
+    # สร้างคิวที่ใช้ร่วมกัน
     queue = asyncio.Queue()
-    # run the producer and consumers
+    # รันโปรดิวเซอร์และคอนซูเมอร์
     await asyncio.gather (producer (queue), consumer (queue))
-    # start the asyncio program
+    # เริ่มโปรแกรม asyncio
 
 asyncio.run(main())
