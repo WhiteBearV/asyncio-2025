@@ -5,7 +5,7 @@ import json
 from urllib.parse import urljoin
 
 SERVERS = [
-    "http://172.20.48.160:8000/",
+    "http://192.168.43.97:8000/",
     "http://172.20.49.54:8000/",
     "http://172.20.50.19:8000/",
 ]
