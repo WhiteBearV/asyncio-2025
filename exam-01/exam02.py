@@ -20,7 +20,7 @@ async def process():
 
 async def main():
 
-    started_tasks = [asyncio.create_task (process()) for i in range(5,-1,-1)]
+    started_tasks = [asyncio.create_task (process()) for i in range(5)]
     await asyncio.sleep(0.1)
     for task in started_tasks:
         await task

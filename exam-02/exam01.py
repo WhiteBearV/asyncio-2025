@@ -27,7 +27,6 @@ def is_prime(num: int) -> bool:
 
 # ฟังก์ชันหาจำนวนเฉพาะ ≤ n แบบ async
 async def primes_up_to(n: int) -> List[int]:
-    # yield control เพื่อไม่ block event loop
     await asyncio.sleep(0)
     return [x for x in range(2, n + 1) if is_prime(x)]
 
@@ -36,16 +35,8 @@ async def main():
     tasks = [
         asyncio.create_task(primes_up_to(n)) for n in ns
     ]
-    # TODO: สร้าง asyncio task สำหรับแต่ละ n
-    # hint: ใช้ asyncio.create_task(...)
     for n, task in zip(ns, tasks):
         primes = await task
         print(f"Primes <= {n}: {primes}")
-    # TODO: รอ task แต่ละตัวให้เสร็จและพิมพ์ผลลัพธ์
-    # hint: ใช้ await
-    await asyncio.gather(*tasks)
-
-    pass
-
 # เรียก main
 asyncio.run(main())
