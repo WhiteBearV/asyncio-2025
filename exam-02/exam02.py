@@ -30,15 +30,26 @@
 
 import asyncio
 
-async def worker(id: int):
+async def worker(id: int, queue: asyncio.Queue):
     for i in range(1, 6):
         print(f"Worker-{id} is working round {i}")
         await asyncio.sleep(1)
     print(f"Worker-{id} finished")
 
 async def main():
-    tasks = []
-    
+    queue = asyncio.Queue()  # สร้างคิวแบบ asyncio สำหรับส่งงานระหว่างโปรดิวเซอร์และคอนซูเมอร์
+
+    tasks = [        
+        asyncio.create_task(worker({i+1},queue))  # สร้าง task สำหรับแคชเชียร์แต่ละคน
+        for i in range(3)  # ทำซ้ำสำหรับ 2 แคชเชียร์ (i=0..1)]
+    ]
+
+
+
+
+
+    await asyncio.gather(*tasks)  # รอให้ลูกค้าทั้งหมดใส่งานเข้าคิวเสร็จ
+    await queue.join()  # รอจนกว่างานในคิวทั้งหมดจะถูกทำเครื่องหมายว่าเสร็จ (task_done เรียกครบ)
     # TODO: สร้าง asyncio task สำหรับ worker 3 ตัว
     # hint: ใช้ asyncio.create_task(worker(id))
     
