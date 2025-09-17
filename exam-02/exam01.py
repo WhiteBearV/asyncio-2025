@@ -37,9 +37,15 @@ async def main():
     
     # TODO: สร้าง asyncio task สำหรับแต่ละ n
     # hint: ใช้ asyncio.create_task(...)
+    tasks.append(asyncio.create_task(primes_up_to(ns)))
+    print(tasks)
+
     
     # TODO: รอ task แต่ละตัวให้เสร็จและพิมพ์ผลลัพธ์
     # hint: ใช้ await
+    await asyncio.gather(*tasks)  # รอให้ลูกค้าทั้งหมดใส่งานเข้าคิวเสร็จ
+
+    
     pass
 
 # เรียก main
