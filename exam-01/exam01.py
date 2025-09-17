@@ -11,8 +11,6 @@ async def say_hello():
     await asyncio.sleep(1)
     print("World")
 
-async def main():
-    say_hello()
 
-asyncio.run(main())
+asyncio.run(say_hello())
 
