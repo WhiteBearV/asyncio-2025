@@ -43,11 +43,6 @@ async def main():
         asyncio.create_task(worker({i+1},queue))  # สร้าง task สำหรับแคชเชียร์แต่ละคน
         for i in range(3)  # ทำซ้ำสำหรับ 2 แคชเชียร์ (i=0..1)]
     ]
-
-
-
-
-
     await asyncio.gather(*tasks)  # รอให้ลูกค้าทั้งหมดใส่งานเข้าคิวเสร็จ
     await queue.join()  # รอจนกว่างานในคิวทั้งหมดจะถูกทำเครื่องหมายว่าเสร็จ (task_done เรียกครบ)
     # TODO: สร้าง asyncio task สำหรับ worker 3 ตัว

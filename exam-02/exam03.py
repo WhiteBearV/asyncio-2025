@@ -39,9 +39,15 @@ async def countdown(name: str, seconds: int):
     print(f"Timer {name} finished")
 
 async def main():
+    queue = asyncio.Queue()
     timers = [("A", 3), ("B", 5), ("C", 2)]
     
-    tasks = []
+    tasks = [
+        asyncio.create_task(countdown(name, sec)) for name, sec in timers
+    ]
+    await asyncio.gather(*tasks)  # รอให้ลูกค้าทั้งหมดใส่งานเข้าคิวเสร็จ
+    await queue.join()  # รอจนกว่างานในคิวทั้งหมดจะถูกทำเครื่องหมายว่าเสร็จ (task_done เรียกครบ)
+    
     # TODO: สร้าง asyncio task สำหรับแต่ละ countdown
     # hint: ใช้ asyncio.create_task(countdown(name, sec))
     
