@@ -14,6 +14,5 @@ async def main():
     print(f"Result:", result)
 
 
-
 asyncio.run(main())
 
