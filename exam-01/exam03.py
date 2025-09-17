@@ -10,9 +10,10 @@ async def compute(x, y):
     return x + y
 
 async def main():
-    result = [asyncio.create_task(compute(2,3))]
-    print(f"Result:", result)
-
+    task = asyncio.create_task(compute(2, 3))
+    result = await task
+    print("Result:", result)
 
 asyncio.run(main())
+
 

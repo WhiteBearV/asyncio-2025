@@ -27,12 +27,13 @@ async def work(n):
     print(f"Done {n}")
     return n
 
-async def main():
-    results = []
-    for i in range(3):
-        results.append(asyncio.create_task(work(i)))
-    for r in results:
-        print("Result:", await r)
+async def run_group(start, end):
+    tasks = [asyncio.create_task(work(i)) for i in range(start, end)]
+    results = await asyncio.gather(*tasks)
+    print(f"Results{start//3 + 1}:", results)
 
-asyncio.run(main())
+async def main():
+    await run_group(0, 3)
+    await run_group(3, 6)
+
 asyncio.run(main())
