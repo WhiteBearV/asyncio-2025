@@ -24,7 +24,8 @@ async def main():
     tasks = [
         asyncio.create_task(worker(f"Task-{i}", i+1)) for i in range(3)
     ]
-    results = await asyncio.gather(*tasks)
+    results = await asyncio.gather(*tasks)   # รอทุก task เสร็จ
+    print(f"Results: {results}")             # แสดงค่าที่ได้
     print("All tasks scheduled")
 
 asyncio.run(main())
